@@ -1,12 +1,6 @@
-# Pulumi Native Provider Boilerplate
+# Kubernetes-in-Docker | Pulumi Native Provider
 
-This repository is a boilerplate showing how to create a native Pulumi provider.
-
-## Authoring a Pulumi Native Provider
-
-This boilerplate creates a working Pulumi-owned provider named `xyz`.
-It implements a random number generator that you can [build and test out for yourself](#test-against-the-example) and then replace the Random code with code specific to your provider.
-
+This repository is a native Pulumi provider for KinD Kubernetes.
 
 ### Prerequisites
 
@@ -19,30 +13,15 @@ Ensure the following tools are installed and present in your `$PATH`:
 * [TypeScript](https://www.typescriptlang.org/)
 * [Python](https://www.python.org/downloads/) (called as `python3`).  For recent versions of MacOS, the system-installed version is fine.
 * [.NET](https://dotnet.microsoft.com/download)
-
-
-### Creating and Initializing the Repository
-
-Pulumi offers this repository as a [GitHub template repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) for convenience.  From this repository:
-
-1. Click "Use this template".
-1. Set the following options:
-   * Owner: pulumi 
-   * Repository name: pulumi-xyz-native (replace "xyz" with the name of your provider)
-   * Description: Pulumi provider for xyz
-   * Repository type: Public
-1. Clone the generated repository.
-
-From the templated repository:
-
-1. Search-replace `xyz` with the name of your desired provider.
+* [Docker]()
+* [KinD]()
 
 #### Build the provider and install the plugin
 
    ```bash
    $ make build install
    ```
-   
+
 This will:
 
 1. Create the SDK codegen binary and place it in a `./bin` folder (gitignored)
@@ -51,25 +30,25 @@ This will:
 4. Install the provider on your machine.
 
 #### Test against the example
-   
+
 ```bash
 $ cd examples/simple
-$ yarn link @pulumi/xyz
+$ yarn link @pulumi/kind-native
 $ yarn install
 $ pulumi stack init test
 $ pulumi up
 ```
 
-Now that you have completed all of the above steps, you have a working provider that generates a random string for you.
+Now that you have completed all of the above steps, you have a working kind kubernetes cluster running locally.
 
 #### A brief repository overview
 
 You now have:
 
 1. A `provider/` folder containing the building and implementation logic
-    1. `cmd/pulumi-resource-xyz/main.go` - holds the provider's sample implementation logic.
+    1. `cmd/pulumi-resource-kind/main.go` - holds the provider's sample implementation logic.
 2. `deployment-templates` - a set of files to help you around deployment and publication
-3. `sdk` - holds the generated code libraries created by `pulumi-gen-xyz/main.go`
+3. `sdk` - holds the generated code libraries created by `pulumi-gen-kind/main.go`
 4. `examples` a folder of Pulumi programs to try locally and/or use in CI.
 5. A `Makefile` and this `README`.
 

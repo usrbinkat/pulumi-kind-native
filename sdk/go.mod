@@ -1,4 +1,4 @@
-module github.com/pulumi/pulumi-xyz/sdk
+module github.com/usrbinkat/pulumi-kind-native/sdk
 
 go 1.21
 

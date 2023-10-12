@@ -1,10 +1,10 @@
-PROJECT_NAME := Pulumi Xyz Resource Provider
+PROJECT_NAME := Pulumi Kind Resource Provider
 
-PACK             := xyz
+PACK             := kind
 PACKDIR          := sdk
-PROJECT          := github.com/pulumi/pulumi-xyz
-NODE_MODULE_NAME := @pulumi/xyz
-NUGET_PKG_NAME   := Pulumi.Xyz
+PROJECT          := github.com/usrbinkat/pulumi-kind-native
+NODE_MODULE_NAME := @pulumi/kind-native
+NUGET_PKG_NAME   := Pulumi.Kind
 
 PROVIDER        := pulumi-resource-${PACK}
 VERSION         ?= $(shell pulumictl get version)

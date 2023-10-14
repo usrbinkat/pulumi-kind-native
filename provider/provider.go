@@ -1,91 +1,120 @@
-// Copyright 2016-2023, Pulumi Corporation.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
+// File: provider/provider.go
 package provider
 
 import (
-	"math/rand"
-	"time"
+	"fmt"
 
-	p "github.com/pulumi/pulumi-go-provider"
-	"github.com/pulumi/pulumi-go-provider/infer"
-	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/plugin"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/resource"
 )
 
-// Version is initialized by the Go linker to contain the semver of this build.
-var Version string
-
-const Name string = "kind"
-
-func Provider() p.Provider {
-	// We tell the provider what resources it needs to support.
-	// In this case, a single custom resource.
-	return infer.Provider(infer.Options{
-		Resources: []infer.InferredResource{
-			infer.Resource[Random, RandomArgs, RandomState](),
-		},
-		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
-			"provider": "index",
-		},
-	})
-}
-
-// Each resource has a controlling struct.
-// Resource behavior is determined by implementing methods on the controlling struct.
-// The `Create` method is mandatory, but other methods are optional.
-// - Check: Remap inputs before they are typed.
-// - Diff: Change how instances of a resource are compared.
-// - Update: Mutate a resource in place.
-// - Read: Get the state of a resource from the backing provider.
-// - Delete: Custom logic when the resource is deleted.
-// - Annotate: Describe fields and set defaults for a resource.
-// - WireDependencies: Control how outputs and secrets flows through values.
-type Random struct{}
-
-// Each resource has in input struct, defining what arguments it accepts.
-type RandomArgs struct {
-	// Fields projected into Pulumi must be public and hava a `pulumi:"..."` tag.
-	// The pulumi tag doesn't need to match the field name, but its generally a
-	// good idea.
-	Length int `pulumi:"length"`
-}
-
-// Each resource has a state, describing the fields that exist on the created resource.
-type RandomState struct {
-	// It is generally a good idea to embed args in outputs, but it isn't strictly necessary.
-	RandomArgs
-	// Here we define a required output called result.
-	Result string `pulumi:"result"`
-}
-
-// All resources must implement Create at a minumum.
-func (Random) Create(ctx p.Context, name string, input RandomArgs, preview bool) (string, RandomState, error) {
-	state := RandomState{RandomArgs: input}
-	if preview {
-		return name, state, nil
+// Check validates the resource properties.
+func (p *KindClusterProvider) Check(ctx *pulumi.Context, olds, news resource.PropertyMap) (plugin.CheckResult, error) {
+	args := KindClusterArgs{
+		ClusterName: news["clusterName"].V.(string),
+		ConfigFile:  news["configFile"].V.(string),
+		WorkingDir:  news["workingDir"].V.(string),
+		Purge:       news["purge"].V.(bool),
 	}
-	state.Result = makeRandom(input.Length)
-	return name, state, nil
+	if err := ValidateKindClusterArgs(args); err != nil {
+		return plugin.CheckResult{}, err
+	}
+	return plugin.CheckResult{}, nil
 }
 
-func makeRandom(length int) string {
-	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
-	charset := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-
-	result := make([]rune, length)
-	for i := range result {
-		result[i] = charset[seededRand.Intn(len(charset))]
+// Create allocates a new resource instance.
+func (p *KindClusterProvider) Create(ctx *pulumi.Context, inputs resource.PropertyMap) (plugin.CreateResult, error) {
+	args := KindClusterArgs{
+		ClusterName: inputs["clusterName"].V.(string),
+		ConfigFile:  inputs["configFile"].V.(string),
+		WorkingDir:  inputs["workingDir"].V.(string),
+		Purge:       inputs["purge"].V.(bool),
 	}
-	return string(result)
+
+	// Create a Kind cluster
+	if err := CreateKindCluster(ctx, args.ClusterName, args); err != nil {
+		return plugin.CreateResult{}, fmt.Errorf("Failed to create Kind cluster: %w", err)
+	}
+
+	// Create Docker volumes
+	if err := CreateVolumesForCluster(ctx, args); err != nil {
+		return plugin.CreateResult{}, fmt.Errorf("Failed to create Docker volumes: %w", err)
+	}
+
+	return plugin.CreateResult{ID: args.ClusterName, Outputs: inputs}, nil
+}
+
+// Delete tears down an existing resource.
+func (p *KindClusterProvider) Delete(ctx *pulumi.Context, id pulumi.ID, props resource.PropertyMap) error {
+	cluster := KindCluster{
+		ClusterName: props["clusterName"].V.(string),
+	}
+
+	// Delete Kind cluster
+	if err := DeleteKindCluster(ctx, cluster); err != nil {
+		return fmt.Errorf("Failed to delete Kind cluster: %w", err)
+	}
+
+	// Delete Docker volumes
+	args := KindClusterArgs{ClusterName: cluster.ClusterName}
+	if err := DeleteVolumesForCluster(ctx, args); err != nil {
+		return fmt.Errorf("Failed to delete Docker volumes: %w", err)
+	}
+
+	return nil
+}
+
+// Diff checks for the differences between the old and new states and returns a DiffResult.
+func (p *KindClusterProvider) Diff(ctx *pulumi.Context, id pulumi.ID, olds, news resource.PropertyMap) (plugin.DiffResult, error) {
+	diff := plugin.DiffResult{Changes: plugin.DiffNone}
+
+	oldClusterName, newClusterName := olds["clusterName"].V.(string), news["clusterName"].V.(string)
+	oldConfig, newConfig := olds["configFile"].V.(string), news["configFile"].V.(string)
+
+	// Check if the cluster name or config file has changed, if so, flag for replacement
+	if oldClusterName != newClusterName || oldConfig != newConfig {
+		diff.Changes = plugin.DiffSome
+		diff.ReplaceKeys = append(diff.ReplaceKeys, "clusterName", "configFile")
+	}
+
+	return diff, nil
+}
+
+// Read fetches the current state of the resource.
+func (p *KindClusterProvider) Read(ctx *pulumi.Context, id pulumi.ID, props resource.PropertyMap) (plugin.ReadResult, error) {
+	clusterName := props["clusterName"].V.(string)
+	exists, err := CheckIfClusterExists(ctx, clusterName)
+	if err != nil {
+		return plugin.ReadResult{}, err
+	}
+	if !exists {
+		return plugin.ReadResult{}, nil
+	}
+	return plugin.ReadResult{
+		ID:         id,
+		Properties: props,
+	}, nil
+}
+
+// Update updates an existing resource instance.
+func (p *KindClusterProvider) Update(ctx *pulumi.Context, id pulumi.ID, olds, news resource.PropertyMap) (plugin.UpdateResult, error) {
+	args := KindClusterArgs{
+		ClusterName: news["clusterName"].V.(string),
+		ConfigFile:  news["configFile"].V.(string),
+		WorkingDir:  news["workingDir"].V.(string),
+		Purge:       news["purge"].V.(bool),
+	}
+
+	// Update Kind cluster
+	if err := UpdateKindCluster(ctx, args.ClusterName, args); err != nil {
+		return plugin.UpdateResult{}, fmt.Errorf("Failed to update Kind cluster: %w", err)
+	}
+
+	// Update Docker volumes
+	if err := UpdateVolumesForCluster(ctx, args); err != nil {
+		return plugin.UpdateResult{}, fmt.Errorf("Failed to update Docker volumes: %w", err)
+	}
+
+	return plugin.UpdateResult{Outputs: news}, nil
 }

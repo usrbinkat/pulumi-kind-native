@@ -62,6 +62,7 @@ require (
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/esc v0.5.4 // indirect
 	github.com/pulumi/pulumi/pkg/v3 v3.88.1 // indirect
+	github.com/pulumi/pulumi/sdk v1.14.1
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06 // indirect
@@ -70,6 +71,7 @@ require (
 	github.com/segmentio/encoding v0.3.6 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/skeema/knownhosts v1.2.1 // indirect
+	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.4.0 // indirect

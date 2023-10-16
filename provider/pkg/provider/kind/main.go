@@ -61,16 +61,12 @@ func (k *KindClusterProvider) Create(ctx context.Context, req *gcrp.CreateReques
 		return nil, fmt.Errorf("Create cluster error in Create method: %s", err)
 	}
 
-	// Since CreateKindCluster doesn't return the actual state, we can either
-	// 1. Derive it here if possible
-	// 2. Simply not include it in the response
-	// Here, I'll opt for the latter for demonstration.
 	return &gcrp.CreateResponse{
 		Id: urn,
 	}, nil
 }
 
-// Delete handles the deletion of Kind clusters.
+// Delete handles the deletion of Kind clusters and Docker volumes.
 //
 // Takes a DeleteRequest object and performs the logic for cluster deletion.
 // Returns a DeleteResponse indicating successful deletion.

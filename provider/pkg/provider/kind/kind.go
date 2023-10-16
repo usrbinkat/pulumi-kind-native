@@ -15,7 +15,7 @@ import (
 	local "github.com/pulumi/pulumi/sdk/v3/go/pulumi/cmd"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/provider/cmd/pulumi-resource-command/schema"
 
-	// Import the version package to obtain the current provider version.
+	// Import version package to obtain the current provider version.
 	pv "github.com/usrbinkat/pulumi-kind-native/provider/pkg/version"
 )
 
@@ -24,7 +24,7 @@ var kindProviderVersion = pv.GetVersion()
 
 // CreateKindClusterArgs constructs and returns a KindClusterArgs struct
 // based on the given PropertyMap inputs.
-// It provides default values for unspecified properties.
+// Provides default values for unspecified properties.
 func CreateKindClusterArgs(inputs resource.PropertyMap) (KindClusterArgs, error) {
 	// Initialize arguments with default values.
 	clusterName := "pulumi"
@@ -49,6 +49,8 @@ func CreateKindClusterArgs(inputs resource.PropertyMap) (KindClusterArgs, error)
 		purge = p
 	}
 
+	// TODO: Add a hash function on the configFile to track state and change of kind/config.yaml
+	
 	return KindClusterArgs{
 		ClusterName:   pulumi.String(clusterName),
 		ConfigFile:    pulumi.String(configFile),
@@ -58,13 +60,10 @@ func CreateKindClusterArgs(inputs resource.PropertyMap) (KindClusterArgs, error)
 }
 
 // ValidateKindInputs validates the values inside a KindClusterArgs struct.
-// It checks whether the provided cluster name, config file, and directory are valid.
+// Checks whether the provided cluster name, config file, and directory are valid.
 //
 // Parameters:
 // - args: The KindClusterArgs struct containing all the required and optional arguments.
-//
-// Returns:
-// - error: An error object if any of the validations fail.
 func ValidateKindInputs(args KindClusterArgs) error {
 	// Validate ClusterName
 	if args.ClusterName == "" {
@@ -81,13 +80,10 @@ func ValidateKindInputs(args KindClusterArgs) error {
 		return fmt.Errorf("KindConfigDir cannot be empty")
 	}
 
-	// You could add additional file or directory existence checks here if necessary
-
 	return nil
 }
 
 // ValidateKindClusterArgs validates the input arguments for creating or updating a Kind cluster.
-// It logs an error and returns it if validation fails.
 func ValidateKindClusterArgs(ctx *pulumi.Context, args KindClusterArgs) error {
 	if err := ValidateKindInputs(args); err != nil {
 		errorMsg := fmt.Sprintf("Validation failed for KindClusterArgs: %s", err.Error())
@@ -99,7 +95,6 @@ func ValidateKindClusterArgs(ctx *pulumi.Context, args KindClusterArgs) error {
 }
 
 // CheckIfClusterExists queries the existing Kind clusters and checks if a cluster with the given name exists.
-// It returns a boolean indicating the existence of the cluster and an error if the query operation fails.
 func CheckIfClusterExists(ctx *pulumi.Context, clusterName string) (bool, error) {
 	// Execute the 'kind get clusters' command to retrieve the list of existing clusters.
 	cmd := exec.Command("kind", "get", "clusters")
@@ -120,7 +115,7 @@ func CheckIfClusterExists(ctx *pulumi.Context, clusterName string) (bool, error)
 }
 
 // CreateKindCluster orchestrates the creation of a new Kind cluster using Pulumi's local.Command.
-// It validates the input arguments before proceeding with the cluster creation.
+// Validates the input arguments before proceeding with the cluster creation.
 func CreateKindCluster(ctx *pulumi.Context, args *KindClusterArgs, opts ...pulumi.ResourceOption) error {
 	// Validate input arguments.
 	if err := ValidateKindClusterArgs(ctx, *args); err != nil {
@@ -145,7 +140,7 @@ func CreateKindCluster(ctx *pulumi.Context, args *KindClusterArgs, opts ...pulum
 }
 
 // DeleteKindCluster deletes an existing Kind cluster.
-// It runs the 'kind delete cluster' command.
+// Runs the 'kind delete cluster' cli command.
 func DeleteKindCluster(ctx *pulumi.Context, clusterName string, opts ...pulumi.ResourceOption) error {
 	_, err := local.NewCommand(ctx, "deleteKindCluster", &local.CommandArgs{
 		Delete: &schema.Command{
@@ -164,7 +159,7 @@ func DeleteKindCluster(ctx *pulumi.Context, clusterName string, opts ...pulumi.R
 }
 
 // UpdateKindCluster updates an existing Kind cluster by deleting and recreating it.
-// This is a simplistic update strategy and could be optimized in the future.
+// A simplistic update strategy which could be optimized in the future.
 func UpdateKindCluster(ctx *pulumi.Context, args *KindClusterArgs) error {
 	// Delete the existing cluster.
 	if err := DeleteKindCluster(ctx, string(args.ClusterName)); err != nil {
@@ -186,9 +181,6 @@ func UpdateKindCluster(ctx *pulumi.Context, args *KindClusterArgs) error {
 // - ctx: The Pulumi Context object for logging and resource management.
 // - args: The arguments required for Kind cluster creation or update.
 // - preview: A boolean flag for preview mode.
-//
-// Returns:
-// - error: An error object indicating any issues during the operation.
 func CreateOrUpdateKindCluster(ctx *pulumi.Context, args KindClusterArgs, preview bool) error {
 	// Initialize KindClusterUtility to use its Create, Update, and Delete methods.
 	var clusterUtil ClusterUtility = &KindClusterUtility{}
@@ -222,9 +214,6 @@ func CreateOrUpdateKindCluster(ctx *pulumi.Context, args KindClusterArgs, previe
 // - ctx: The Pulumi Context for logging and resource management.
 // - args: The KindClusterArgs struct containing all the required and optional arguments.
 // - preview: A boolean flag indicating if this is a dry-run.
-//
-// Returns:
-// - error: An error object if the creation fails.
 func (k *KindClusterUtility) Create(ctx *pulumi.Context, args KindClusterArgs, preview bool) error {
 	// Delegate to the actual cluster creation function.
 	return CreateKindCluster(ctx, &args)
@@ -237,9 +226,6 @@ func (k *KindClusterUtility) Create(ctx *pulumi.Context, args KindClusterArgs, p
 // - ctx: The Pulumi Context for logging and resource management.
 // - args: The KindClusterArgs struct containing all the required and optional arguments.
 // - preview: A boolean flag indicating if this is a dry-run.
-//
-// Returns:
-// - error: An error object if the update fails.
 func (k *KindClusterUtility) Update(ctx *pulumi.Context, args KindClusterArgs, preview bool) error {
 	// Delegate to the actual cluster update function.
 	return UpdateKindCluster(ctx, &args)
@@ -251,9 +237,6 @@ func (k *KindClusterUtility) Update(ctx *pulumi.Context, args KindClusterArgs, p
 // Parameters:
 // - ctx: The Pulumi Context for logging and resource management.
 // - clusterName: The name of the cluster to be deleted.
-//
-// Returns:
-// - error: An error object if the deletion fails.
 func (k *KindClusterUtility) Delete(ctx *pulumi.Context, clusterName string) error {
 	// Delegate to the actual cluster deletion function.
 	return DeleteKindCluster(ctx, clusterName)

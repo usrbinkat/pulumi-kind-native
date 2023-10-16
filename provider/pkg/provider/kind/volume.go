@@ -18,7 +18,6 @@ func DefaultVolumeNames() []string {
 }
 
 // validateInput performs basic validation on the VolumeArgs.
-// For example, it could check if the cluster name is not empty and if at least one volume name is provided.
 func ValidateVolumeInputs(args VolumeArgs) error {
 	if args.ClusterName == "" {
 		return fmt.Errorf("ClusterName cannot be empty")
@@ -35,7 +34,6 @@ func ValidateVolumeInputs(args VolumeArgs) error {
 }
 
 // ValidateVolumeArgs performs validation on the input parameters for Docker volumes.
-// It uses a separate validation function and logs the outcome.
 func ValidateVolumeArgs(ctx *pulumi.Context, args VolumeArgs) error {
 	if err := ValidateVolumeInputs(args); err != nil {
 		ctx.Log.Error(fmt.Sprintf("Validation failed for VolumeArgs: %s", err.Error()), nil)
@@ -70,7 +68,7 @@ func CheckIfVolumesExist(ctx *pulumi.Context, volumeNames []string) (bool, error
 }
 
 // CreateVolumesForCluster orchestrates the creation of Docker volumes for the Kind cluster.
-// It validates the arguments and then iterates over the default volume names to create each.
+// Validates the arguments and then iterates over the default volume names to create each.
 func CreateVolumesForCluster(ctx *pulumi.Context, args VolumeArgs, opts ...pulumi.ResourceOption) error {
 	if err := ValidateVolumeArgs(ctx, args); err != nil {
 		return err
@@ -94,7 +92,7 @@ func CreateVolumesForCluster(ctx *pulumi.Context, args VolumeArgs, opts ...pulum
 }
 
 // DeleteVolumesForCluster orchestrates the deletion of Docker volumes.
-// It iterates over the provided list of volume names and deletes each.
+// Iterates over the provided list of volume names and deletes each.
 func DeleteVolumesForCluster(ctx *pulumi.Context, volumeNames []string, opts ...pulumi.ResourceOption) error {
 	for _, volumeName := range volumeNames {
 		_, err := local.NewCommand(ctx, fmt.Sprintf("deleteVolume%s", volumeName), &local.CommandArgs{
@@ -114,7 +112,7 @@ func DeleteVolumesForCluster(ctx *pulumi.Context, volumeNames []string, opts ...
 }
 
 // UpdateVolumesForCluster updates Docker volumes for the Kind cluster.
-// It does so by first deleting existing volumes and then creating new ones.
+// TODO: set this to only run if `purge=true`
 func UpdateVolumesForCluster(ctx *pulumi.Context, args VolumeArgs, opts ...pulumi.ResourceOption) error {
 	if err := DeleteVolumesForCluster(ctx, DefaultVolumeNames(), opts...); err != nil {
 		return err

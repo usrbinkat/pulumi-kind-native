@@ -7,20 +7,18 @@ import (
 	p "github.com/pulumi/pulumi-go-provider"
 )
 
-func (*Kind) Create(ctx p.Context, name string, input KindArgs, preview bool) (string, KindState, error) {
+func (*Kind) Create(ctx p.Context, name string, input KindStateArgs, preview bool) (string, KindStateArgs, error) {
 	// Logic to create a KinD cluster
 	cmd := exec.Command("kind", "create", "cluster", "--name", input.Name)
 	err := cmd.Run()
 	if err != nil {
-		return "", KindState{}, err
+		return "", KindStateArgs{}, err
 	}
 
-	state := KindState(input)
-
-	return name, state, nil
+	return name, input, nil
 }
 
-func (*Kind) Delete(ctx p.Context, id string, props KindState) error {
+func (*Kind) Delete(ctx p.Context, id string, props KindStateArgs) error {
 	// Logic to delete a KinD cluster
 	cmd := exec.Command("kind", "delete", "cluster", "--name", props.Name)
 	return cmd.Run()

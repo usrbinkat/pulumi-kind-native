@@ -100,7 +100,7 @@ RUN set -ex \
     && export urlPulumiRelease="https://api.github.com/repos/pulumi/pulumi/releases/latest" \
     && export urlPulumiVersion=$(curl -s ${urlPulumiRelease} | awk -F '["v,]' '/tag_name/{print $5}') \
     && export urlPulumiBase="https://github.com/pulumi/pulumi/releases/download" \
-    && export urlPulumiBin="pulumi-v${urlPulumiVersion}-linux-x64.tar.gz" \
+    && export urlPulumiBin="pulumi-v${urlPulumiVersion}-linux-${arch}.tar.gz" \
     && export urlPulumi="${urlPulumiBase}/v${urlPulumiVersion}/${urlPulumiBin}" \
     && curl -L ${urlPulumi} \
         | tar xzvf - --directory /tmp \
@@ -116,7 +116,7 @@ RUN set -ex \
     && export urlPulumiRelease="https://api.github.com/repos/pulumi/pulumictl/releases/latest" \
     && export urlPulumiVersion=$(curl -s ${urlPulumiRelease} | awk -F '["v,]' '/tag_name/{print $5}') \
     && export urlPulumiBase="https://github.com/pulumi/pulumictl/releases/download" \
-    && export urlPulumiBin="pulumictl-v${urlPulumiVersion}-linux-arm64.tar.gz" \
+    && export urlPulumiBin="pulumictl-v${urlPulumiVersion}-linux-${arch}.tar.gz" \
     && export urlPulumi="${urlPulumiBase}/v${urlPulumiVersion}/${urlPulumiBin}" \
     && curl -L ${urlPulumi} \
         | tar xzvf - --directory /tmp \

@@ -126,6 +126,41 @@ RUN set -ex \
     && pulumictl version \
     && true
 
+# helm
+RUN set -ex \
+    && export varVerHelm="$(curl -s https://api.github.com/repos/helm/helm/releases/latest | awk -F '[\"v,]' '/tag_name/{print $5}')" \
+    && export varUrlHelm="https://get.helm.sh/helm-v${varVerHelm}-linux-amd64.tar.gz" \
+    && curl -L ${varUrlHelm} | tar xzvf - --directory /tmp linux-amd64/helm \
+    && mv /tmp/linux-amd64/helm /bin/helm \
+    && rm -rf /tmp/linux-amd64 \
+    && chmod +x /bin/helm \
+    && /bin/helm version \
+    && true
+
+# kubectl
+RUN set -ex \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "amd64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
+    && export varKubectlVersion="$(curl --silent -L https://storage.googleapis.com/kubernetes-release/release/stable.txt | sed 's/v//g')" \
+    && export varKubectlUrl="https://storage.googleapis.com/kubernetes-release/release/v${varKubectlVersion}/bin/linux/${arch}/kubectl" \
+    && curl -L ${varKubectlUrl} --output /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/kubectl \
+    && kubectl version --client || exit 1 \
+    && true
+
+# Kind Kubernetes-in-Docker
+RUN set -ex \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "amd64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
+    && export urlKindRelease="https://api.github.com/repos/kubernetes-sigs/kind/releases/latest" \
+    && export urlKindVersion=$(curl -s ${urlKindRelease} | awk -F '["v,]' '/tag_name/{print $5}') \
+    && export urlKindBase="https://github.com/kubernetes-sigs/kind/releases/download" \
+    && export urlKindBin="kind-linux-${arch}" \
+    && export urlKind="${urlKindBase}/v${urlKindVersion}/${urlKindBin}" \
+    && curl -L ${urlKind} --output /usr/local/bin/kind \
+    && chmod +x /usr/local/bin/kind \
+    && which kind \
+    && kind version \
+    && true
+
 WORKDIR /provider
 CMD ["make", "build"]
 

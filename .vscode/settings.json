@@ -1,4 +1,4 @@
 {
-      "go.testTags": "all",
-          "go.buildTags": "all",
+     "go.testTags": "all",
+     "go.buildTags": "all",
 }

@@ -1,3 +1,13 @@
+# Create a new Provider
+
+```bash
+mkdir provider && cd provider
+go mod init pulumi-kind-provider
+
+mkdir kind
+touch kind/kind.go kind/args.go
+````
+
 # Deploy
 
 1. Customize the .github/workflows/release.yaml with the correct tokens using the format:

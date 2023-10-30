@@ -1,5 +1,5 @@
 {
-  "name": "Devbox Remote Container",
+  "name": "pulumi-devcontainer",
   "build": {
     "dockerfile": "../docker/Dockerfile",
     "context": ".."
@@ -10,9 +10,23 @@
       "extensions": [
         "ms-azuretools.vscode-docker",
         "ms-vscode.makefile-tools",
+        "ms-vscode-remote.remote-containers",
+        "mads-hartmann.bash-ide-vscode",
         "golang.go"
       ]
     }
   },
-  "remoteUser": "root"
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "version": "latest",
+      "installDockerBuildx": true,
+      "moby": true
+    }
+  },
+  "remoteUser": "root",
+  "forwardPorts": [8080],
+  "runArgs": ["--network=host"]
 }

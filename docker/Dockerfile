@@ -52,7 +52,7 @@ RUN set -ex \
 # golang
 ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/go/bin"
 RUN set -ex \
-    && export arch=$(uname -m | awk '{print ($1 == "x86_64") ? "amd64" : ($1 == "aarch64" ? "arm64" : "unknown")}') \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "amd64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
     && export goversion="$(curl -s https://go.dev/dl/?mode=json \
         | awk -F'[":go]' '/  "version"/{print $8}' \
         | head -n1)" \
@@ -96,7 +96,7 @@ RUN set -ex \
 
 # pulumi
 RUN set -ex \
-    && export arch=$(uname -m | awk '{print ($1 == "x86_64") ? "x64" : ($1 == "aarch64" ? "arm64" : "unknown")}') \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "x64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
     && export urlPulumiRelease="https://api.github.com/repos/pulumi/pulumi/releases/latest" \
     && export urlPulumiVersion=$(curl -s ${urlPulumiRelease} | awk -F '["v,]' '/tag_name/{print $5}') \
     && export urlPulumiBase="https://github.com/pulumi/pulumi/releases/download" \
@@ -112,7 +112,7 @@ RUN set -ex \
 
 # pulumictl
 RUN set -ex \
-    && export arch=$(uname -m | awk '{print ($1 == "x86_64") ? "amd64" : ($1 == "aarch64" ? "arm64" : "unknown")}') \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "amd64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
     && export urlPulumiRelease="https://api.github.com/repos/pulumi/pulumictl/releases/latest" \
     && export urlPulumiVersion=$(curl -s ${urlPulumiRelease} | awk -F '["v,]' '/tag_name/{print $5}') \
     && export urlPulumiBase="https://github.com/pulumi/pulumictl/releases/download" \

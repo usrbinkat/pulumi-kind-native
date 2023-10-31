@@ -2,6 +2,7 @@
 package kind
 
 import (
+	"os"
 	"os/exec"
 
 	p "github.com/pulumi/pulumi-go-provider"
@@ -9,7 +10,10 @@ import (
 
 func (*Kind) Create(ctx p.Context, name string, input KindStateArgs, preview bool) (string, KindStateArgs, error) {
 	// Logic to create a KinD cluster
+	ctx.Logf(diag.Info, "Creating Kind cluster with name: %s", input.Name)
 	cmd := exec.Command("kind", "create", "cluster", "--name", input.Name)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
 	err := cmd.Run()
 	if err != nil {
 		return "", KindStateArgs{}, err

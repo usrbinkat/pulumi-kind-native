@@ -1,0 +1,13 @@
+name: consume-kind-native
+runtime: yaml
+
+plugins:
+  providers:
+    - name: kind
+      path: /root/go/bin
+
+resources:
+  myArbitraryKindClusterResourceName:
+    type: kind:Kind
+    properties:
+      name: test

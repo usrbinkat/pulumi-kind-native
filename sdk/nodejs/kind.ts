@@ -31,9 +31,6 @@ export class Kind extends pulumi.CustomResource {
         return obj['__pulumiType'] === Kind.__pulumiType;
     }
 
-    /**
-     * The name of the KinD cluster.
-     */
     public readonly name!: pulumi.Output<string>;
 
     /**
@@ -63,8 +60,5 @@ export class Kind extends pulumi.CustomResource {
  * The set of arguments for constructing a Kind resource.
  */
 export interface KindArgs {
-    /**
-     * The name of the KinD cluster.
-     */
     name: pulumi.Input<string>;
 }

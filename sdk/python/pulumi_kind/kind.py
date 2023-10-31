@@ -17,16 +17,12 @@ class KindArgs:
                  name: pulumi.Input[str]):
         """
         The set of arguments for constructing a Kind resource.
-        :param pulumi.Input[str] name: The name of the KinD cluster.
         """
         pulumi.set(__self__, "name", name)
 
     @property
     @pulumi.getter
     def name(self) -> pulumi.Input[str]:
-        """
-        The name of the KinD cluster.
-        """
         return pulumi.get(self, "name")
 
     @name.setter
@@ -45,7 +41,6 @@ class Kind(pulumi.CustomResource):
         Create a Kind resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param pulumi.Input[str] name: The name of the KinD cluster.
         """
         ...
     @overload
@@ -111,8 +106,5 @@ class Kind(pulumi.CustomResource):
     @property
     @pulumi.getter
     def name(self) -> pulumi.Output[str]:
-        """
-        The name of the KinD cluster.
-        """
         return pulumi.get(self, "name")
 

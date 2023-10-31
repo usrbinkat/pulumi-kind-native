@@ -12,9 +12,6 @@ namespace Pulumi.Kind
     [KindResourceType("kind:index:Kind")]
     public partial class Kind : global::Pulumi.CustomResource
     {
-        /// <summary>
-        /// The name of the KinD cluster.
-        /// </summary>
         [Output("name")]
         public Output<string> Name { get; private set; } = null!;
 
@@ -63,9 +60,6 @@ namespace Pulumi.Kind
 
     public sealed class KindArgs : global::Pulumi.ResourceArgs
     {
-        /// <summary>
-        /// The name of the KinD cluster.
-        /// </summary>
         [Input("name", required: true)]
         public Input<string> Name { get; set; } = null!;
 

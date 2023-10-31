@@ -16,7 +16,6 @@ import (
 type Kind struct {
 	pulumi.CustomResourceState
 
-	// The name of the KinD cluster.
 	Name pulumi.StringOutput `pulumi:"name"`
 }
 
@@ -63,13 +62,11 @@ func (KindState) ElementType() reflect.Type {
 }
 
 type kindArgs struct {
-	// The name of the KinD cluster.
 	Name string `pulumi:"name"`
 }
 
 // The set of arguments for constructing a Kind resource.
 type KindArgs struct {
-	// The name of the KinD cluster.
 	Name pulumi.StringInput
 }
 
@@ -122,7 +119,6 @@ func (o KindOutput) ToOutput(ctx context.Context) pulumix.Output[*Kind] {
 	}
 }
 
-// The name of the KinD cluster.
 func (o KindOutput) Name() pulumi.StringOutput {
 	return o.ApplyT(func(v *Kind) pulumi.StringOutput { return v.Name }).(pulumi.StringOutput)
 }

@@ -6,33 +6,32 @@
   },
   "customizations": {
     "vscode": {
-      "settings": {
-        "editor.minimap.enabled": false,
-        "workbench.activityBar.visible": true,
-        "editor.gotoLocation.multipleReferences": "goto",
-        "editor.gotoLocation.multipleDefinitions": "goto",
-        "editor.gotoLocation.multipleDeclarations": "goto",
-        "editor.gotoLocation.multipleImplementations": "goto",
-        "editor.gotoLocation.multipleTypeDefinitions": "goto",
-        "explorer.openEditors.visible": 0,
-        "editor.quickSuggestionsDelay": 0,
-        "editor.suggestSelection": "first",
-        "editor.snippetSuggestions": "top",
-        "files.trimTrailingWhitespace": true,
-        "files.trimFinalNewlines": true
-      },
+      "settings": [
+        "go.testTags", "all",
+        "go.buildTags", "all",
+        "editor.minimap.enabled", false,
+        "explorer.openEditors.visible", 1,
+        "editor.quickSuggestionsDelay", 0,
+        "editor.suggestSelection", "first",
+        "editor.snippetSuggestions", "top",
+        "editor.gotoLocation.multipleReferences", "goto",
+        "editor.gotoLocation.multipleDefinitions", "goto",
+        "editor.gotoLocation.multipleDeclarations", "goto",
+        "editor.gotoLocation.multipleImplementations", "goto",
+        "editor.gotoLocation.multipleTypeDefinitions", "goto",
+        "files.trimTrailingWhitespace", true,
+        "files.trimFinalNewlines", true
+      ],
       "extensions": [
+        "golang.go",
         "vscodevim.vim",
+        "github.copilot",
         "ms-azuretools.vscode-docker",
-        "ms-vscode.makefile-tools",
-        "ms-vscode-remote.remote-containers",
-        "golang.go"
+        "ms-vscode-remote.remote-containers"
       ]
     }
   },
   "features": {
-    "ghcr.io/devcontainers/features/aws-cli:1": {},
-    "ghcr.io/devcontainers/features/azure-cli:1": {},
     "ghcr.io/devcontainers/features/common-utils:2": {},
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
       "version": "latest",

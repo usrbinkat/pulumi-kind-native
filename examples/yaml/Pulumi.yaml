@@ -1,4 +1,4 @@
-name: consume-kind-native
+name: provider-kind-native
 runtime: yaml
 
 plugins:
@@ -10,4 +10,4 @@ resources:
   myArbitraryKindClusterResourceName:
     type: kind:Kind
     properties:
-      name: test
+      name: provider-dev

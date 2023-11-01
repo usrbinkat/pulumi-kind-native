@@ -1,3 +1,0 @@
-name: kind-native
-runtime: golang
-description: A simple kind Kubernetes-in-Docker provider

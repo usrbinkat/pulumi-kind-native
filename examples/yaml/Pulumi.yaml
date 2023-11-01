@@ -1,13 +1,6 @@
 name: provider-kind-native
-runtime: yaml
-
+runtime: python
 plugins:
   providers:
     - name: kind
       path: /root/go/bin
-
-resources:
-  myArbitraryKindClusterResourceName:
-    type: kind:Kind
-    properties:
-      name: provider-dev

@@ -24,6 +24,13 @@ ensure::
 provider::
 	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))
 
+examples::
+	@export PULUMI_FLAGS="--logtostderr --generate-only --non-interactive";
+	@cd examples/yaml && pulumi convert $PULUMI_FLAGS --language go --out ../go;
+	@cd examples/yaml && pulumi convert $PULUMI_FLAGS --language nodejs --out ../nodejs;
+	@cd examples/yaml && pulumi convert $PULUMI_FLAGS --language python --out ../python;
+	@cd examples/yaml && pulumi convert $PULUMI_FLAGS --language dotnet --out ../dotnet;
+
 provider_debug::
 	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -gcflags="all=-N -l" -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))
 

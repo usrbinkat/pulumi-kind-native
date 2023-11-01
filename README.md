@@ -16,56 +16,101 @@ Ensure the following tools are installed and present in your `$PATH`:
 * [Docker]()
 * [KinD]()
 
-#### Build the provider and install the plugin
+## Pulumi-Kind-Native Provider
 
-   ```bash
-   $ make build install
-   ```
+![Build Status](https://img.shields.io/github/workflow/status/usrbinkat/pulumi-kind-native/CI)
+![License](https://img.shields.io/github/license/usrbinkat/pulumi-kind-native)
 
-This will:
+### Overview
 
-1. Create the SDK codegen binary and place it in a `./bin` folder (gitignored)
-2. Create the provider binary and place it in the `./bin` folder (gitignored)
-3. Generate the dotnet, Go, Node, and Python SDKs and place them in the `./sdk` folder
-4. Install the provider on your machine.
+The \`pulumi-kind-native\` provider is a specialized package aimed at the seamless provisioning and management of [Kind](https://kind.sigs.k8s.io/) clusters via Pulumi. This provider allows you to create, update, and delete Kind clusters and associated Docker volumes programmatically using Pulumi's infrastructure-as-code capabilities. 
 
-#### Test against the example
+### Features
+
+- Provision and manage Kind clusters
+- Manage associated Docker volumes
+- Support for input validation
+- Idempotent operations
+- Extensible and customizable
+- Comprehensive logging and debugging support
+
+### Table of Contents
+
+- [Kubernetes-in-Docker | Pulumi Native Provider](#kubernetes-in-docker--pulumi-native-provider)
+    - [Prerequisites](#prerequisites)
+  - [Pulumi-Kind-Native Provider](#pulumi-kind-native-provider)
+    - [Overview](#overview)
+    - [Features](#features)
+    - [Table of Contents](#table-of-contents)
+    - [Installation](#installation)
+    - [Getting Started](#getting-started)
+    - [Usage](#usage)
+    - [API Documentation](#api-documentation)
+    - [Examples](#examples)
+    - [Troubleshooting](#troubleshooting)
+    - [Contributing](#contributing)
+    - [Testing](#testing)
+    - [License](#license)
+  - [References](#references)
+
+### Installation
 
 ```bash
-$ cd examples/simple
-$ yarn link @pulumi/kind-native
-$ yarn install
-$ pulumi stack init test
-$ pulumi up
+# Install the package (Node.js example)
+$ pulumi plugin install resource kind v{version}
 ```
 
-Now that you have completed all of the above steps, you have a working kind kubernetes cluster running locally.
+### Getting Started
 
-#### A brief repository overview
+Before you begin, make sure you have [Pulumi](https://www.pulumi.com/docs/get-started/install/) and [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) installed.
 
-You now have:
+```bash
+# Create a new Pulumi project
+$ pulumi new typescript
+```
 
-1. A `provider/` folder containing the building and implementation logic
-    1. `cmd/pulumi-resource-kind/main.go` - holds the provider's sample implementation logic.
-2. `deployment-templates` - a set of files to help you around deployment and publication
-3. `sdk` - holds the generated code libraries created by `pulumi-gen-kind/main.go`
-4. `examples` a folder of Pulumi programs to try locally and/or use in CI.
-5. A `Makefile` and this `README`.
+### Usage
 
-#### Additional Details
+Here's a TypeScript example that shows how to create a Kind cluster:
 
-This repository depends on the pulumi-go-provider library. For more details on building providers, please check
-the [Pulumi Go Provider docs](https://github.com/pulumi/pulumi-go-provider).
+```typescript
+import * as pulumi from '@pulumi/pulumi';
+import * as kind from '@usrbinkat/pulumi-kind-native';
 
-### Build Examples
+const cluster = new kind.KindCluster("my-cluster", {
+    clusterName: "pulumi-cluster",
+    configFile: "./kind-config.yaml",
+    purge: false,
+});
+```
 
-Create an example program using the resources defined in your provider, and place it in the `examples/` folder.
+### API Documentation
 
-You can now repeat the steps for [build, install, and test](#test-against-the-example).
+The API documentation is available at [pkg.go.dev](https://pkg.go.dev/github.com/usrbinkat/pulumi-kind-native).
 
-## Configuring CI and releases
+### Examples
 
-1. Follow the instructions laid out in the [deployment templates](./deployment-templates/README-DEPLOYMENT.md).
+For more comprehensive examples, please refer to the \`examples/\` directory in this repository.
+
+### Troubleshooting
+
+Check the logs for any errors or inconsistencies. The provider is designed to output comprehensive logs to assist in debugging.
+
+### Contributing
+
+Contributions are highly encouraged! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project. Don't forget to check the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+### Testing
+
+To run the tests, execute the following command:
+
+```bash
+$ make test
+```
+
+### License
+
+This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
 
 ## References
 

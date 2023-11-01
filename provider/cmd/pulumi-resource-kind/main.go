@@ -1,24 +1,25 @@
-// Copyright 2016-2023, Pulumi Corporation.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
+// File: provider/cmd/pulumi-resource-kind/main.go
 package main
 
 import (
 	p "github.com/pulumi/pulumi-go-provider"
-
-	kind "github.com/usrbinkat/pulumi-kind-native/provider"
+	"github.com/pulumi/pulumi-go-provider/infer"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
+	pk "github.com/usrbinkat/pulumi-kind-native/provider/kind"
 )
 
-// Serve the provider against Pulumi's Provider protocol.
-func main() { p.RunProvider(kind.Name, kind.Version, kind.Provider()) }
+func main() {
+	err := p.RunProvider("kind", "0.1.0", provider())
+	if err != nil {
+		panic(err)
+	}
+}
+
+func provider() p.Provider {
+	return infer.Provider(infer.Options{
+		Resources: []infer.InferredResource{infer.Resource[*pk.Kind, pk.KindStateArgs]()},
+		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
+			"kind": "index",
+		},
+	})
+}

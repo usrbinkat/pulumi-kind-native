@@ -52,7 +52,7 @@ RUN set -ex \
 # golang
 ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/go/bin"
 RUN set -ex \
-    && export arch=$(uname -m | awk '{print ($1 == "x86_64") ? "amd64" : ($1 == "aarch64" ? "arm64" : "unknown")}') \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "amd64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
     && export goversion="$(curl -s https://go.dev/dl/?mode=json \
         | awk -F'[":go]' '/  "version"/{print $8}' \
         | head -n1)" \
@@ -60,6 +60,13 @@ RUN set -ex \
         | tar -C /usr/local/ -xzvf - \
     && which go \
     && go version \
+    && go install github.com/cweill/gotests/gotests@latest \
+    && go install github.com/fatih/gomodifytags@latest \
+    && go install github.com/josharian/impl@latest \
+    && go install github.com/haya14busa/goplay/cmd/goplay@latest \
+    && go install github.com/go-delve/delve/cmd/dlv@latest \
+    && go install honnef.co/go/tools/cmd/staticcheck@latest \
+    && go install golang.org/x/tools/gopls@latest \
     && true
 
 # nodejs npm yarn
@@ -89,11 +96,11 @@ RUN set -ex \
 
 # pulumi
 RUN set -ex \
-    && export arch=$(uname -m | awk '{print ($1 == "x86_64") ? "x64" : ($1 == "aarch64" ? "arm64" : "unknown")}') \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "x64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
     && export urlPulumiRelease="https://api.github.com/repos/pulumi/pulumi/releases/latest" \
     && export urlPulumiVersion=$(curl -s ${urlPulumiRelease} | awk -F '["v,]' '/tag_name/{print $5}') \
     && export urlPulumiBase="https://github.com/pulumi/pulumi/releases/download" \
-    && export urlPulumiBin="pulumi-v${urlPulumiVersion}-linux-x64.tar.gz" \
+    && export urlPulumiBin="pulumi-v${urlPulumiVersion}-linux-${arch}.tar.gz" \
     && export urlPulumi="${urlPulumiBase}/v${urlPulumiVersion}/${urlPulumiBin}" \
     && curl -L ${urlPulumi} \
         | tar xzvf - --directory /tmp \
@@ -105,11 +112,11 @@ RUN set -ex \
 
 # pulumictl
 RUN set -ex \
-    && export arch=$(uname -m | awk '{print ($1 == "x86_64") ? "amd64" : ($1 == "aarch64" ? "arm64" : "unknown")}') \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "amd64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
     && export urlPulumiRelease="https://api.github.com/repos/pulumi/pulumictl/releases/latest" \
     && export urlPulumiVersion=$(curl -s ${urlPulumiRelease} | awk -F '["v,]' '/tag_name/{print $5}') \
     && export urlPulumiBase="https://github.com/pulumi/pulumictl/releases/download" \
-    && export urlPulumiBin="pulumictl-v${urlPulumiVersion}-linux-arm64.tar.gz" \
+    && export urlPulumiBin="pulumictl-v${urlPulumiVersion}-linux-${arch}.tar.gz" \
     && export urlPulumi="${urlPulumiBase}/v${urlPulumiVersion}/${urlPulumiBin}" \
     && curl -L ${urlPulumi} \
         | tar xzvf - --directory /tmp \
@@ -117,6 +124,41 @@ RUN set -ex \
     && rm -rf /tmp/* \
     && which pulumictl \
     && pulumictl version \
+    && true
+
+# helm
+RUN set -ex \
+    && export varVerHelm="$(curl -s https://api.github.com/repos/helm/helm/releases/latest | awk -F '[\"v,]' '/tag_name/{print $5}')" \
+    && export varUrlHelm="https://get.helm.sh/helm-v${varVerHelm}-linux-amd64.tar.gz" \
+    && curl -L ${varUrlHelm} | tar xzvf - --directory /tmp linux-amd64/helm \
+    && mv /tmp/linux-amd64/helm /bin/helm \
+    && rm -rf /tmp/linux-amd64 \
+    && chmod +x /bin/helm \
+    && /bin/helm version \
+    && true
+
+# kubectl
+RUN set -ex \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "amd64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
+    && export varKubectlVersion="$(curl --silent -L https://storage.googleapis.com/kubernetes-release/release/stable.txt | sed 's/v//g')" \
+    && export varKubectlUrl="https://storage.googleapis.com/kubernetes-release/release/v${varKubectlVersion}/bin/linux/${arch}/kubectl" \
+    && curl -L ${varKubectlUrl} --output /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/kubectl \
+    && kubectl version --client || exit 1 \
+    && true
+
+# Kind Kubernetes-in-Docker
+RUN set -ex \
+    && export arch=$(uname -m | awk '{ if ($1 == "x86_64") print "amd64"; else if ($1 == "aarch64" || $1 == "arm64") print "arm64"; else print "unknown" }') \
+    && export urlKindRelease="https://api.github.com/repos/kubernetes-sigs/kind/releases/latest" \
+    && export urlKindVersion=$(curl -s ${urlKindRelease} | awk -F '["v,]' '/tag_name/{print $5}') \
+    && export urlKindBase="https://github.com/kubernetes-sigs/kind/releases/download" \
+    && export urlKindBin="kind-linux-${arch}" \
+    && export urlKind="${urlKindBase}/v${urlKindVersion}/${urlKindBin}" \
+    && curl -L ${urlKind} --output /usr/local/bin/kind \
+    && chmod +x /usr/local/bin/kind \
+    && which kind \
+    && kind version \
     && true
 
 WORKDIR /provider

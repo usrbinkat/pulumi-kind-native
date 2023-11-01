@@ -5,23 +5,23 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "./utilities";
 
 // Export members:
+export { KindArgs } from "./kind";
+export type Kind = import("./kind").Kind;
+export const Kind: typeof import("./kind").Kind = null as any;
+utilities.lazyLoad(exports, ["Kind"], () => require("./kind"));
+
 export { ProviderArgs } from "./provider";
 export type Provider = import("./provider").Provider;
 export const Provider: typeof import("./provider").Provider = null as any;
 utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
-
-export { RandomArgs } from "./random";
-export type Random = import("./random").Random;
-export const Random: typeof import("./random").Random = null as any;
-utilities.lazyLoad(exports, ["Random"], () => require("./random"));
 
 
 const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
-            case "kind:index:Random":
-                return new Random(name, <any>undefined, { urn })
+            case "kind:index:Kind":
+                return new Kind(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }

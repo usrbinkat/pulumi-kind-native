@@ -1,0 +1,6 @@
+name: provider-kind-native
+runtime: nodejs
+plugins:
+  providers:
+    - name: kind
+      path: /root/go/bin

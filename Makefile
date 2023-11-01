@@ -25,11 +25,11 @@ provider::
 	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))
 
 examples::
-	@export PULUMI_FLAGS="--logtostderr --generate-only --non-interactive";
-	@cd examples/yaml && pulumi convert $PULUMI_FLAGS --language go --out ../go;
-	@cd examples/yaml && pulumi convert $PULUMI_FLAGS --language nodejs --out ../nodejs;
-	@cd examples/yaml && pulumi convert $PULUMI_FLAGS --language python --out ../python;
-	@cd examples/yaml && pulumi convert $PULUMI_FLAGS --language dotnet --out ../dotnet;
+	@rm -rf examples/{go,nodejs,python,dotnet}
+	@cd examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language go --out ../go 2>&1;
+	@cd examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language nodejs --out ../nodejs 2>&1;
+	@cd examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language python --out ../python 2>&1;
+	@cd examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language dotnet --out ../dotnet 2>&1;
 
 provider_debug::
 	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -gcflags="all=-N -l" -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))

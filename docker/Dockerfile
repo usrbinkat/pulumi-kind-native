@@ -16,6 +16,7 @@ setuptools \
 ARG APT_PKGS="\
 git \
 curl \
+tmux \
 gnupg \
 python3 \
 python3-pip \

@@ -1,0 +1,42 @@
+name: test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: docker://ghcr.io/pulumi/devcontainer:latest
+    permissions:
+      contents: read
+      packages: read
+      actions: read
+    steps:
+    -
+      name: Checkout repository
+      uses: actions/checkout@v4
+      id: git
+      with:
+        submodules: 'recursive'
+    -
+      name: Build and install
+      id: build
+      run: |
+        make build
+    -
+      name: Build and install
+      id: install
+      run: |
+        make install
+    -
+      name: Build and install
+      id: generate-examples
+      run: |
+        make examples

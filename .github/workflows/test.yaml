@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: docker://ghcr.io/pulumi/devcontainer:latest
-      options: --user vscode
+      options: --user root
     permissions:
       contents: read
       packages: read

@@ -3,4 +3,4 @@ runtime: dotnet
 plugins:
   providers:
     - name: kind
-      path: /root/go/bin
+      path: ../../bin # path to the provider binary for local development and testing

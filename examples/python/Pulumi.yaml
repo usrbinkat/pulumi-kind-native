@@ -3,4 +3,4 @@ runtime: python
 plugins:
   providers:
     - name: kind
-      path: /root/go/bin
+      path: ../../bin

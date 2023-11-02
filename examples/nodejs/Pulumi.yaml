@@ -3,4 +3,4 @@ runtime: nodejs
 plugins:
   providers:
     - name: kind
-      path: /root/go/bin
+      path: ../../bin

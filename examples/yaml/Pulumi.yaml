@@ -3,7 +3,7 @@ runtime: python
 plugins:
   providers:
     - name: kind
-      path: /root/go/bin # path to the provider binary for local development and testing
+      path: ../../bin # relative path to the provider binary for local development and testing
 
 resources:
   myArbitraryKindClusterResourceName:

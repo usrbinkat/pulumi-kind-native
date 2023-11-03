@@ -31,7 +31,7 @@ jobs:
       id: build
       run: |
         set -ex
-        pulumictl get version
+        pulumictl get version --is-prerelease --debug
         make build
     -
       name: Install

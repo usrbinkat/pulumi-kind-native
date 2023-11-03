@@ -97,7 +97,9 @@ update::
 	git submodule update --init --recursive
 
 upgrade::
-	git submodule update --remote --merge
+	git submodule update --init --recursive && \
+	git submodule update --remote --merge && \
+	cp .devcontainer/devcontainer.json .devcontainer.json
 
 .PHONY: build
 build:: provider dotnet_sdk go_sdk nodejs_sdk python_sdk

@@ -31,6 +31,7 @@ jobs:
       id: build
       run: |
         set -ex
+        git config --global --add safe.directory /__w/pulumi-kind-native/pulumi-kind-native
         pwd
         ls -lah
         git status

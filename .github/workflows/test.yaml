@@ -44,7 +44,7 @@ jobs:
         ls -lah
         git status
         git branch -a
-        pulumictl get version --is-prerelease --debug --version-prefix v0.0.1
+        pulumictl get version --is-prerelease --debug --version-prefix 0.0.1
         make build
     -
       name: Install

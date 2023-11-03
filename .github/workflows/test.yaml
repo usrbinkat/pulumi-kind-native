@@ -31,6 +31,10 @@ jobs:
       id: build
       run: |
         set -ex
+        pwd
+        ls -lah
+        git status
+        git branch -a
         pulumictl get version --is-prerelease --debug
         make build
     -

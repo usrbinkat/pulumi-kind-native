@@ -1,6 +1,6 @@
 # Pulumi KinD (Kubernetes-in-Docker) Native Provider
 
-![Build Status](https://img.shields.io/github/workflow/status/usrbinkat/pulumi-kind-native/CI)
+[![test](https://github.com/usrbinkat/pulumi-kind-native/actions/workflows/test.yaml/badge.svg)](https://github.com/usrbinkat/pulumi-kind-native/actions/workflows/test.yaml)
 ![License](https://img.shields.io/github/license/usrbinkat/pulumi-kind-native)
 
 ### Overview

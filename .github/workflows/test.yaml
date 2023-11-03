@@ -29,7 +29,10 @@ jobs:
     -
       name: Unshallow clone for tags
       id: tags
-      run: git fetch --prune --unshallow --tags
+      run: |
+        set -ex
+        git config --global --add safe.directory /__w/pulumi-kind-native/pulumi-kind-native
+        git fetch --prune --unshallow --tags
     -
       name: Build
       id: build

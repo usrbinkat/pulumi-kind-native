@@ -63,6 +63,20 @@ pulumi up
 > Fig 2.d pulumi up
 ![pulumi up](./assets/pulumi-up.png)
 
+# Dependencies
+
+If you are not using the included Def Container to meet dependencies and prerequisites, then make sure to satisfy the following requirements and ensure they are present in your `$PATH`:
+
+* [`pulumictl`](https://github.com/pulumi/pulumictl#installation)
+* [Go 1.21](https://golang.org/dl/) or 1.latest
+* [NodeJS](https://nodejs.org/en/) 14.x.  We recommend using [nvm](https://github.com/nvm-sh/nvm) to manage NodeJS installations.
+* [Yarn](https://yarnpkg.com/)
+* [TypeScript](https://www.typescriptlang.org/)
+* [Python](https://www.python.org/downloads/) (called as `python3`).  For recent versions of MacOS, the system-installed version is fine.
+* [.NET](https://dotnet.microsoft.com/download)
+* [Docker]()
+* [KinD]()
+
 # Release
 
 1. Push a tag to this repo in the format "v0.0.0" to initiate a release

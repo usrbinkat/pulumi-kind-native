@@ -22,9 +22,7 @@ ensure::
 	cd tests && go mod tidy
 
 provider::
-	set -ex;
-	cd provider
-	go build -o $(WORKING_DIR)/bin/${PROVIDER} -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
+	set -ex && cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 examples::
 	@rm -rf examples/{go,nodejs,python,dotnet}

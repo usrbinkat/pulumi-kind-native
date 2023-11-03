@@ -19,7 +19,6 @@ The \`pulumi-kind-native\` provider is a specialized package aimed at the seamle
 ### Table of Contents
 
 - [Kubernetes-in-Docker | Pulumi Native Provider](#kubernetes-in-docker--pulumi-native-provider)
-    - [Prerequisites](#prerequisites)
   - [Pulumi-Kind-Native Provider](#pulumi-kind-native-provider)
     - [Overview](#overview)
     - [Features](#features)

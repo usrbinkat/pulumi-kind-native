@@ -74,10 +74,13 @@ python_sdk::
 		rm ./bin/setup.py.bak && \
 		cd ./bin && python3 setup.py build sdist
 
+login::
+	export PULUMI_CONFIG_PASSPHRASE="asdfqwer1234" && \
+	pulumi login
+
 up::
 	cd ${WORKING_DIR}/examples/yaml && \
 	export PULUMI_CONFIG_PASSPHRASE="asdfqwer1234" && \
-	pulumi login --local && \
 	pulumi stack init dev && \
 	pulumi stack select dev && \
 	pulumi config set name dev && \
@@ -86,8 +89,8 @@ up::
 destroy::
 	cd ${WORKING_DIR}/examples/yaml && \
 	export PULUMI_CONFIG_PASSPHRASE="asdfqwer1234" && \
-	pulumi login --local && \
 	pulumi destroy -y && \
+	pulumi stack select dev && \
 	pulumi stack rm dev -y
 
 update::

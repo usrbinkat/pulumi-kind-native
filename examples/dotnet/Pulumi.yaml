@@ -3,4 +3,4 @@ runtime: dotnet
 plugins:
   providers:
     - name: kind
-      path: ../../bin # path to the provider binary for local development and testing
+      path: /home/vscode/go/bin # relative path to the provider binary for local development and testing

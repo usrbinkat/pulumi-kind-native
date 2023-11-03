@@ -22,14 +22,16 @@ ensure::
 	cd tests && go mod tidy
 
 provider::
-	set -ex && cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
+	cd ${WORKING_DIR}/provider && \
+	go build -o $(WORKING_DIR)/bin/${PROVIDER} -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 examples::
-	@rm -rf examples/{go,nodejs,python,dotnet}
-	@cd examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language go --out ../go 2>&1;
-	@cd examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language nodejs --out ../nodejs 2>&1;
-	@cd examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language python --out ../python 2>&1;
-	@cd examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language dotnet --out ../dotnet 2>&1;
+	cd ${WORKING_DIR}/examples/yaml && \
+	rm -rf ${WORKING_DIR}/examples/{go,nodejs,python,dotnet} && \
+	cd ${WORKING_DIR}/examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language go --out ${WORKING_DIR}/examples/go 2>&1 && \
+	cd ${WORKING_DIR}/examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language nodejs --out ${WORKING_DIR}/examples/nodejs 2>&1 && \
+	cd ${WORKING_DIR}/examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language python --out ${WORKING_DIR}/examples/python 2>&1 && \
+	cd ${WORKING_DIR}/examples/yaml && pulumi convert --logtostderr --generate-only --non-interactive --language dotnet --out ${WORKING_DIR}/examples/dotnet 2>&1
 
 provider_debug::
 	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -gcflags="all=-N -l" -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))
@@ -71,6 +73,28 @@ python_sdk::
 		sed -i.bak -e 's/^VERSION = .*/VERSION = "$(PYPI_VERSION)"/g' -e 's/^PLUGIN_VERSION = .*/PLUGIN_VERSION = "$(VERSION)"/g' ./bin/setup.py && \
 		rm ./bin/setup.py.bak && \
 		cd ./bin && python3 setup.py build sdist
+
+up::
+	cd ${WORKING_DIR}/examples/yaml && \
+	export PULUMI_CONFIG_PASSPHRASE="asdfqwer1234" && \
+	pulumi login --local && \
+	pulumi stack init dev && \
+	pulumi stack select dev && \
+	pulumi config set name dev && \
+	pulumi up -y
+
+destroy::
+	cd ${WORKING_DIR}/examples/yaml && \
+	export PULUMI_CONFIG_PASSPHRASE="asdfqwer1234" && \
+	pulumi login --local && \
+	pulumi destroy -y && \
+	pulumi stack rm dev -y
+
+update::
+	git submodule update --init --recursive
+
+upgrade::
+	git submodule update --remote --merge
 
 .PHONY: build
 build:: provider dotnet_sdk go_sdk nodejs_sdk python_sdk

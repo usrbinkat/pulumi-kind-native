@@ -3,4 +3,4 @@ runtime: nodejs
 plugins:
   providers:
     - name: kind
-      path: ../../bin
+      path: /home/vscode/go/bin
